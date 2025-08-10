@@ -167,5 +167,32 @@ namespace ProductosManager.Controllers
             int totalProductos = productList.Count();
             return Ok(totalProductos);
         }
+
+        // PATCH api/productos/:id
+        [HttpPatch("{id}")]
+        public ActionResult<List<Producto>> ActualizarParcial([FromRoute] int id, [FromBody] ProductoPatchRequest productoPatch)
+        {
+            var productoExistente = productList.FirstOrDefault(p => p.Id == id);
+
+            if (productoExistente == null )
+            {
+                return NotFound($"Producto para actualizar con id {id} no encontrado");
+            }
+
+            if (productoPatch.Precio <= 0)
+            {
+                return BadRequest("El precio debe ser mayor a 0");
+            }
+
+            if (productoPatch.Stock < 0)
+            {
+                return BadRequest("El stock debe ser mayor a 0");
+            }
+
+            productoExistente.Precio = productoPatch.Precio;
+            productoExistente.Stock = productoPatch.Stock;
+
+            return NoContent();
+        }
     }
 }
