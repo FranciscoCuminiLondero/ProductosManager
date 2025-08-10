@@ -142,5 +142,17 @@ namespace ProductosManager.Controllers
 
             return Ok(resultados);
         }
+
+
+        // GET api/productos/precio-minimo/:valor
+        [HttpGet("precio-minimo/{valor}")]
+        public ActionResult<List<Producto>> ObtenerPorPrecioMinimo([FromRoute] decimal valor)
+        {
+            var productosFiltrados = productList
+                .Where(p => p.Precio >= valor)
+                .ToList();
+
+            return Ok(productosFiltrados);
+        }
     }
 }
