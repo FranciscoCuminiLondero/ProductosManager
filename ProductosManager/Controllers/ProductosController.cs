@@ -30,7 +30,8 @@ namespace ProductosManager.Controllers
         {
             var producto = productList.FirstOrDefault(p => p.Id == id);
 
-            if (producto == null) {
+            if (producto == null)
+            {
                 return NotFound($"No se encontró un producto con ID {id}");
             }
 
@@ -51,10 +52,11 @@ namespace ProductosManager.Controllers
                 return BadRequest("El precio debe ser mayor a 0.");
             }
 
-            if(productList.Any())
+            if (productList.Any())
             {
                 producto.Id = productList.Max(p => p.Id) + 1;
-            } else
+            }
+            else
             {
                 producto.Id = 1;
             }
@@ -81,7 +83,7 @@ namespace ProductosManager.Controllers
         {
             var productoExistente = productList.FirstOrDefault(p => p.Id == id);
 
-            if(productoExistente == null)
+            if (productoExistente == null)
             {
                 return NotFound($"No se encontró producto con ID {id} para actualizar");
             }
@@ -91,12 +93,12 @@ namespace ProductosManager.Controllers
                 return BadRequest("El nombre es requerido");
             }
 
-            if(producto.Precio <= 0)
+            if (producto.Precio <= 0)
             {
                 return BadRequest("El precio debe ser mayor a 0");
             }
 
-            if(producto.Stock < 0)
+            if (producto.Stock < 0)
             {
                 return BadRequest("El stock no puede ser menor a 0");
             }
@@ -114,7 +116,7 @@ namespace ProductosManager.Controllers
         {
             var productoExistente = productList.FirstOrDefault(p => p.Id == id);
 
-            if(productoExistente == null)
+            if (productoExistente == null)
             {
                 return NotFound($"No se encontró producto con ID {id} para eliminar");
 
@@ -123,6 +125,22 @@ namespace ProductosManager.Controllers
             productList.Remove(productoExistente);
 
             return NoContent();
+        }
+
+        //GET api/productos/buscar?nombre=texto
+        [HttpGet("buscar")]
+        public ActionResult<List<Producto>> BuscarPorNombre([FromQuery] string nombre)
+        {
+            if (string.IsNullOrEmpty(nombre))
+            {
+                return Ok(new List<Producto>());
+            }
+
+            var resultados = productList
+                .Where(p => p.Nombre.Contains(nombre, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            return Ok(resultados);
         }
     }
 }
