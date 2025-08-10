@@ -52,6 +52,11 @@ namespace ProductosManager.Controllers
                 return BadRequest("El precio debe ser mayor a 0.");
             }
 
+            if (producto.Stock < 0)
+            {
+                return BadRequest("El stock no puede ser menor a 0.");
+            }
+
             if (productList.Any())
             {
                 producto.Id = productList.Max(p => p.Id) + 1;
