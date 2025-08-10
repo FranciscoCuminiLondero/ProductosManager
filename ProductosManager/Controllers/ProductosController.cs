@@ -159,5 +159,13 @@ namespace ProductosManager.Controllers
 
             return Ok(productosFiltrados);
         }
+
+        // GET api/productos/total
+        [HttpGet("total")]
+        public ActionResult<List<Producto>> ObtenerCantidadTotal()
+        {
+            int totalProductos = productList.Count();
+            return Ok(totalProductos);
+        }
     }
 }
