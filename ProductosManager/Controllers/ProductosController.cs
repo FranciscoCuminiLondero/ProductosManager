@@ -10,9 +10,18 @@ namespace ProductosManager.Controllers
     {
         private static List<Producto> productList = new List<Producto>()
         {
-            new Producto(1,"Chomba", 20000.00m, 4),
-            new Producto(2,"Pantalón", 25000.00m, 2),
-            new Producto(3,"Bermuda", 30000.00m, 1)
+            new Producto(1,"Chomba Blanca", 20000.00m, 4, null),
+            new Producto(2,"Pantalón Azul", 25000.00m, 2, null),
+            new Producto(3,"Bermuda Lila", 30000.00m, 1, null)
+        };
+
+        private static List<Categoria> categoryList = new List<Categoria>()
+        {
+            new Categoria(1,"Chombas"),
+            new Categoria(2, "Pantalones"),
+            new Categoria(3, "Bermudas"),
+            new Categoria(4, "Calzados")
+
         };
 
         //GET api/productos
@@ -193,6 +202,46 @@ namespace ProductosManager.Controllers
             productoExistente.Stock = productoPatch.Stock;
 
             return NoContent();
+        }
+
+        //PUT api/productos/:id/categoria/:categoriaId
+        [HttpPut("{id}/categoria/{categoriaId}")]
+        public ActionResult AsociarCategoria([FromRoute] int id, [FromRoute] int categoriaId )
+        {
+            var producto = productList.FirstOrDefault(p => p.Id == id);
+            if(producto == null)
+            {
+                return NotFound($"Producto con Id {id} no encontrado");
+            }
+
+            var categoria = categoryList.FirstOrDefault(c => c.Id == categoriaId);
+            if(categoria == null)
+            {
+                return NotFound($"Categoria con ID {id} no encontrada");
+            }
+
+            producto.Categoria = categoria;
+            return Ok($"Categoría '{categoria.Nombre}' asignada al producto '{producto.Nombre}'");
+        }
+
+        //DELETE api/productos/:id/categoria/:categoriaId
+        [HttpDelete("{id}/categoria")]
+        public ActionResult DesasociarCategoria([FromRoute] int id)
+        {
+            var producto = productList.FirstOrDefault(p => p.Id == id);
+            if (producto == null)
+            {
+                return NotFound($"Producto con ID {id} no encontrado");
+            }
+
+            if (producto.Categoria == null)
+            {
+                return BadRequest("El producto no tiene ninguna categoría asociada");
+            }
+
+            producto.Categoria = null;
+
+            return Ok($"Categoría desasociada del producto '{producto.Nombre}'");
         }
     }
 }
