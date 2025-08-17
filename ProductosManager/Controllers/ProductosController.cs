@@ -162,15 +162,15 @@ namespace ProductosManager.Controllers
 
 
         // GET api/productos/precio-minimo/:valor
-        [HttpGet("precio-minimo/{valor}")]
-        public ActionResult<List<Producto>> ObtenerPorPrecioMinimo([FromRoute] decimal valor)
-        {
-            var productosFiltrados = productList
-                .Where(p => p.Precio >= valor)
-                .ToList();
+        //[HttpGet("precio-minimo/{valor}")]
+        //public ActionResult<List<Producto>> ObtenerPorPrecioMinimo([FromRoute] decimal valor)
+        //{
+        //    var productosFiltrados = productList
+        //        .Where(p => p.Precio >= valor)
+        //        .ToList();
 
-            return Ok(productosFiltrados);
-        }
+        //    return Ok(productosFiltrados);
+        //}
 
         // GET api/productos/total
         [HttpGet("total")]
@@ -281,5 +281,28 @@ namespace ProductosManager.Controllers
 
             return Ok(resultado);
         }
+
+        // GET api/productos/precio-minimo/{valor}
+        [HttpGet("precio-minimo/{valor}")]
+        public ActionResult<IEnumerable<Producto>> ProductosConPrecioMinimo([FromRoute] decimal valor)
+        {
+            var productos = productList
+                .Where(p => p.Precio >= valor)
+                .ToList();
+
+            return Ok(productos);
+        }
+
+        // GET api/productos/precio-maximo/{valor}
+        [HttpGet("precio-maximo/{valor}")]
+        public ActionResult<IEnumerable<Producto>> ProductosConPrecioMaximo([FromRoute] decimal valor)
+        {
+            var productos = productList
+                .Where(p => p.Precio <= valor)
+                .ToList();
+
+            return Ok(productos);
+        }
+
     }
 }
