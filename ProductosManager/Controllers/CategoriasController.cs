@@ -11,7 +11,10 @@ namespace ProductosManager.Controllers
         {
             new Producto(1,"Chomba Blanca", 20000.00m, 4, new Categoria(1,"Chombas")),
             new Producto(2,"Pantalón Azul", 25000.00m, 2, new Categoria(2,"Pantalones")),
-            new Producto(3,"Bermuda Lila", 30000.00m, 1, new Categoria(3,"Bermudas"))
+            new Producto(3,"Pantalón Azul", 25000.00m, 2, new Categoria(2,"Pantalones")),
+            new Producto(4,"Pantalón Blanco", 25000.00m, 2, new Categoria(2,"Pantalones")),
+            new Producto(5,"Pantalón Gris", 25000.00m, 2, new Categoria(2,"Pantalones")),
+            new Producto(6,"Bermuda Lila", 30000.00m, 1, new Categoria(3,"Bermudas"))
         };
 
         private static List<Categoria> categoryList = new List<Categoria>()
@@ -114,6 +117,24 @@ namespace ProductosManager.Controllers
 
             categoryList.Remove(categoriaExistente);
             return NoContent();
+        }
+
+        //GET api/Categorias/:id/productos
+        [HttpGet("{id}/productos")]
+        public ActionResult<IEnumerable<Producto>> ProductosByCategoria([FromRoute] int id)
+        {
+            var categoria = categoryList.FirstOrDefault(c => c.Id == id);
+            if(categoria == null)
+            {
+                return NotFound($"Categoria con {id} no encontrada");
+            }
+
+            var productos = productList
+                .Where(p => p.Categoria != null && p.Categoria.Id == id)
+                .ToList();
+
+            return Ok(productos);
+
         }
     }
 };
