@@ -10,9 +10,12 @@ namespace ProductosManager.Controllers
     {
         private static List<Producto> productList = new List<Producto>()
         {
-            new Producto(1,"Chomba Blanca", 20000.00m, 4, null),
-            new Producto(2,"Pantalón Azul", 25000.00m, 2, null),
-            new Producto(3,"Bermuda Lila", 30000.00m, 1, null)
+            new Producto(1,"Chomba Blanca", 20000.00m, 4, new Categoria(1,"Chombas")),
+            new Producto(2,"Pantalón Azul", 25000.00m, 2, new Categoria(2,"Pantalones")),
+            new Producto(3,"Pantalón Azul", 25000.00m, 2, new Categoria(2,"Pantalones")),
+            new Producto(4,"Pantalón Blanco", 25000.00m, 2, new Categoria(2,"Pantalones")),
+            new Producto(5,"Pantalón Gris", 25000.00m, 2, new Categoria(2,"Pantalones")),
+            new Producto(6,"Bermuda Lila", 30000.00m, 1, new Categoria(3,"Bermudas"))
         };
 
         private static List<Categoria> categoryList = new List<Categoria>()
@@ -142,20 +145,20 @@ namespace ProductosManager.Controllers
         }
 
         //GET api/productos/buscar?nombre=texto
-        [HttpGet("buscar")]
-        public ActionResult<List<Producto>> BuscarPorNombre([FromQuery] string nombre)
-        {
-            if (string.IsNullOrEmpty(nombre))
-            {
-                return Ok(new List<Producto>());
-            }
+        //[HttpGet("buscar")]
+        //public ActionResult<List<Producto>> BuscarPorNombre([FromQuery] string nombre)
+        //{
+        //    if (string.IsNullOrEmpty(nombre))
+        //    {
+        //        return Ok(new List<Producto>());
+        //    }
 
-            var resultados = productList
-                .Where(p => p.Nombre.Contains(nombre, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+        //    var resultados = productList
+        //        .Where(p => p.Nombre.Contains(nombre, StringComparison.OrdinalIgnoreCase))
+        //        .ToList();
 
-            return Ok(resultados);
-        }
+        //    return Ok(resultados);
+        //}
 
 
         // GET api/productos/precio-minimo/:valor
@@ -242,6 +245,41 @@ namespace ProductosManager.Controllers
             producto.Categoria = null;
 
             return Ok($"Categoría desasociada del producto '{producto.Nombre}'");
+        }
+
+        //GET api/productos/buscar
+        [HttpGet("buscar")]
+        public ActionResult<IEnumerable<Producto>> BuscarProductos(
+            [FromQuery] string? nombre,
+            [FromQuery] int? categoriaId,
+            [FromQuery] decimal? precioMin,
+            [FromQuery] decimal? precioMax)
+        {
+            var query = productList.AsQueryable();
+
+            if(!string.IsNullOrEmpty(nombre))
+            {
+                query = query.Where(p => p.Nombre.Contains(nombre, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if(categoriaId.HasValue)
+            {
+                query = query.Where(p => p.Categoria != null && p.Categoria.Id == categoriaId.Value);
+            }
+
+            if(precioMin.HasValue)
+            {
+                query = query.Where(p => p.Precio >= precioMin.Value);
+            }
+
+            if(precioMax.HasValue)
+            {
+                query = query.Where(p => p.Precio <= precioMax.Value);
+            }
+
+            var resultado = query.ToList();
+
+            return Ok(resultado);
         }
     }
 }
